@@ -1,1 +1,1 @@
-from .handlers import register_admin_handlers, register_client_handlers, register_start_handlers
+from .handlers import register_admin_handlers, register_client_handlers, register_start_handlers, register_posthunter_handlers
