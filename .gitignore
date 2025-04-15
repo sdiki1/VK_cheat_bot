@@ -1,0 +1,11 @@
+.env
+.env.prod
+.env.dev
+.env.test
+.env.demo
+*/__pycache__/
+__pycache__
+*/__pycache__/*
+venv
+venv/*
+accounts.db
