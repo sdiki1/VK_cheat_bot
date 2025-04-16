@@ -2,14 +2,14 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-
+from aiogram.utils.markdown import hbold, hcode
 # import public modules
 import random
 import re
 
 # import local modules
 from tg_bot.states import PostActions, AdminActions, PostHunterStates
-from tg_bot.keyboards import get_requests_kb, get_main_kb
+from tg_bot.keyboards import get_requests_kb, get_main_kb, get_request_actions_kb, get_posthunter_kb
 
 
 # import database module
@@ -19,6 +19,12 @@ from tg_bot.models import sessionmaker, engine, PostHunterRequest
 Session = sessionmaker(bind=engine)
 
 
+
+async def handle_posthunter(message: types.Message):
+    await message.answer(
+        "🕵️‍♂️ Режим PostHunter - управление автоматическим продвижением постов",
+        reply_markup=get_posthunter_kb()
+    )
 
 async def start_posthunter(message: types.Message):
     await PostHunterStates.waiting_group_link.set()
@@ -110,6 +116,31 @@ async def show_requests(message: types.Message):
     
     await message.answer("Ваши активные заявки:", reply_markup=get_requests_kb(requests))
 
+async def show_request_details(callback: types.CallbackQuery):
+    request_id = int(callback.data.split('_')[1])
+    session = Session()
+    request = session.query(PostHunterRequest).get(request_id)
+    
+    if not request or request.owner_id != callback.from_user.id:
+        await callback.answer("Заявка не найдена!")
+        return
+    
+    text = (
+        f"{hbold('Детали заявки')} #{request.id}\n\n"
+        f"🔗 Группа: {hcode(request.group_url)}\n"
+        f"❤️ Лайки: {request.likes}\n"
+        f"💬 Комментарии: {request.comments}\n"
+        f"↩️ Репосты: {request.reposts}\n"
+        f"⏱ Интервал: {request.interval} cекунд\n"
+        f"🔄 Статус: {'Активна' if request.is_active else 'Неактивна'}"
+    )
+    
+    await callback.message.edit_text(
+        text,
+        reply_markup=get_request_actions_kb(request.id)
+    )
+    await callback.answer()
+
 
 
 async def delete_request(callback: types.CallbackQuery):
@@ -134,4 +165,6 @@ def register_posthunter_handlers(dp: Dispatcher):
     dp.register_message_handler(process_comments, state=PostHunterStates.waiting_comments_count)
     dp.register_message_handler(process_reposts, state=PostHunterStates.waiting_reposts_count)
     dp.register_message_handler(process_group_link, state=PostHunterStates.waiting_group_link)
-    dp.register_message_handler(start_posthunter, text='Постхантер')
+    dp.register_message_handler(handle_posthunter, text='Постхантер')
+    dp.register_message_handler(start_posthunter, text='Создать заявку')
+    dp.register_callback_query_handler(show_request_details, lambda c: c.data.startswith('req_'))

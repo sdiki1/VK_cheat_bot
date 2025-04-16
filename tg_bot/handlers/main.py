@@ -19,7 +19,8 @@ from tg_bot.models import Account, sessionmaker, engine
 
 Session = sessionmaker(bind=engine)
 
-async def cmd_start(message: types.Message):
+async def cmd_start(message: types.Message, state: FSMContext):
+    await state.finish()
     await message.answer("Добро пожаловать! Выберите действие:", reply_markup=get_main_kb())
 
 
@@ -35,6 +36,7 @@ async def cmd_admin(message: types.Message):
 
 def register_start_handlers(dp: Dispatcher):
     dp.register_message_handler(cmd_start, commands=['start'])
+    dp.register_message_handler(cmd_start, commands=['start'], state="*")
     dp.register_message_handler(cmd_admin, commands=['admin'])
 
 
