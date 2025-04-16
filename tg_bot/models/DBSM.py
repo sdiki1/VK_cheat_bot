@@ -25,6 +25,19 @@ class Task(Base):
     interval = Column(Integer)  
     created_at = Column(DateTime, default=datetime.now)
 
+class PostHunterRequest(Base):
+    __tablename__ = 'posthunter_requests'
+    
+    id = Column(Integer, primary_key=True)
+    group_url = Column(String(500))
+    likes = Column(Integer)
+    comments = Column(Integer)
+    reposts = Column(Integer)
+    interval = Column(Integer)  
+    created_at = Column(DateTime, default=datetime.now)
+    is_active = Column(Boolean, default=True)
+    owner_id = Column(Integer) 
+
 engine = create_engine('sqlite:///accounts.db')
 Base.metadata.create_all(bind=engine)
 
