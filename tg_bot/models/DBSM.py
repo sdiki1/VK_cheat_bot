@@ -2,7 +2,7 @@ import keyword
 from sqlalchemy import create_engine, Column, String, Boolean, DateTime, JSON, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from datetime import datetime, timezone
 
 Base = declarative_base()
 

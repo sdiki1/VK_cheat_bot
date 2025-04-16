@@ -43,7 +43,8 @@ async def process_quantity(message: types.Message, state: FSMContext):
         }
 
         url = data['url']
-        for _ in range(quantity):
+        for i in range(quantity):
+            interval = intervals[task_type]*i
             TaskManager.create_task(
                 task_type=task_type,
                 url=url,

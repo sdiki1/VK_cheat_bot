@@ -26,6 +26,7 @@ async def main():
     config = load_config(".env")
 
     bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
+    await bot.delete_webhook()
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
     bot['config'] = config
