@@ -7,3 +7,11 @@ services:
     volumes:
       - ./:/app/
     restart: unless-stopped
+  posthunter:
+    build: .
+    env_file: .env
+    volumes:
+      - ./:/app/
+    command: ["sh", "-c", "python posthunter_runner.py"]
+    restart: unless-stopped
+  
