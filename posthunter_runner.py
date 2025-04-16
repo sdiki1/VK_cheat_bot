@@ -1,24 +1,24 @@
 from threading import Thread as th
 import time
-from cheating import Likes
+from cheating import Likes, Reposts, Comments
 class PostHunter:
     def __init__(self):
         ...
     
     def run_comments(self):
-        print("run comments")
+        Comments().start()
     
     def run_likes(self):
         Likes().start()
     
     def run_reposts(self):
-        print("run reposts")
+        Reposts().start()
     
     def run_posthunter(self):
         print("run posthunter")
 
     def run(self):
-        th(target=self.run_comments).start()
+        # th(target=self.run_comments).start()
         time.sleep(0.1)
         th(target=self.run_likes).start()
         time.sleep(0.1)

@@ -78,10 +78,12 @@ class Likes:
         self.active_threads = [t for t in self.active_threads if t.is_alive()]
 
     def _process_task(self, task: Task):
+        task_id = task.id
         try:
             
             account = self._get_available_account(task.url)
             account_token = account.token
+            
             if not account:
                 self.task_queue.put(task)
                 print("no account")
@@ -107,7 +109,7 @@ class Likes:
         except Exception as e:
             print(e)
             session2 = sessionmaker(bind=engine)()
-            task = session2.query(Task).filter(Task.id == task.id).first()
+            task = session2.query(Task).filter(Task.id == task_id).first()
             task.status = 'failed'
             self.db.commit()
             session2.add(task)
@@ -116,7 +118,7 @@ class Likes:
 
     def _get_available_account(self, post_url: str) -> Optional[Account]:
         try:
-            accs = self.db.query(Task.account).filter(Task.url == post_url).all()
+            accs = self.db.query(Task.account).filter(Task.url == post_url).filter(Task.type=="like").all()
             accs2 = [i[0] for i in accs if i[0] is not None]
             return self.db.query(Account).filter(Account.is_banned == False).filter(Account.token.not_in(accs2)).order_by(func.random()).first()
         except Exception as e:
@@ -129,12 +131,22 @@ class Likes:
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
         url = task.url
-        data = url[url.find("wall")+4:]
+        if "wall-" in url:
+            data = url[url.find("wall-")+4:]
+        else:
+            data = url[url.find("wall")+4:]
+        
         owner_id = int(data.split("_")[0])
         post_id = int(data.split("_")[1])
         session = vk_api.VkApi(token=task.account)
         api = session.get_api()
-        api.likes.add(type='post', owner_id=owner_id, item_id=post_id)
+        try:
+            print(api.likes.add(type='post', owner_id=owner_id, item_id=post_id))
+        except:
+            task.status = 'failed'
+            session2.add(task)
+            session2.commit()
+            return False
         task.status = 'completed'
         session2.add(task)
         session2.commit()

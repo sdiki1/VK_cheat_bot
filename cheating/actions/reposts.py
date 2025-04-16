@@ -1,6 +1,6 @@
 from hmac import new
 import threading
-import time
+import time, vk_api, random
 from typing import Optional
 from queue import Queue
 from requests import session
@@ -116,7 +116,7 @@ class Reposts:
 
     def _get_available_account(self, post_url: str) -> Optional[Account]:
         try:
-            accs = self.db.query(Task.account).filter(Task.url == post_url).all()
+            accs = self.db.query(Task.account).filter(Task.url == post_url).filter(Task.type=="report").all()
             accs2 = [i[0] for i in accs if i[0] is not None]
             return self.db.query(Account).filter(Account.is_banned == False).filter(Account.token.not_in(accs2)).order_by(func.random()).first()
         except Exception as e:
@@ -128,6 +128,18 @@ class Reposts:
         print("done")
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
+        url = task.url
+        if "wall-" in url:
+                data = url[url.find("wall-")+4:]
+        else:
+            data = url[url.find("wall")+4:]
+        
+        session = vk_api.VkApi(token=task.account)
+        api = session.get_api()
+        id = api.account.get_profile_info()["id"]
+        print(id)
+        r = api.messages.send(user_id=id, attachment=data, random_id=0)
+        print(r)
         task.status = 'completed'
         session2.add(task)
         session2.commit()

@@ -1,6 +1,6 @@
 from hmac import new
 import threading
-import time
+import time, random, vk_api
 from typing import Optional
 from queue import Queue
 from requests import session
@@ -113,10 +113,29 @@ class Comments:
             session2.add(task)
             session2.commit()
             session2.close()
+    def generate_random_comment(self):
+        synonyms = [
+            "Круто", "Здорово", "Супер", "Классно", "Потрясающе",
+            "Великолепно", "Восхитительно", "Замечательно", "Офигенно",
+            "Невероятно", "Шикарно", "Блестяще", "Фантастически", "Удивительно",
+            "Превосходно", "Изумительно", "Сказочно", "Грандиозно", "Потрясно",
+            "Обалденно", "Ошеломительно", "Чудесно", "Нереально", "Поразительно",
+            "Бесподобно"
+        ]
 
+        comments = []
+        for word in synonyms:
+            comments.extend([
+                f"{word}!",
+                word,              
+                f"{word.lower()}!",
+                word.lower()       
+            ])
+        return random.shuffle(comments)[0]
+    
     def _get_available_account(self, post_url: str) -> Optional[Account]:
         try:
-            accs = self.db.query(Task.account).filter(Task.url == post_url).all()
+            accs = self.db.query(Task.account).filter(Task.url == post_url).filter(Task.type=="like").all()
             accs2 = [i[0] for i in accs if i[0] is not None]
             return self.db.query(Account).filter(Account.is_banned == False).filter(Account.token.not_in(accs2)).order_by(func.random()).first()
         except Exception as e:
@@ -128,6 +147,26 @@ class Comments:
         print("done")
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
+        session = vk_api.VkApi(token=task.account)
+        comment = self.generate_random_comment()
+        api = session.get_api()
+        url = task.url
+        if "wall-" in url:
+            data = url[url.find("wall-")+5:]
+        else:
+            data = url[url.find("wall")+4:]
+        owner_id = int(data.split("_")[0])
+        post_id = int(data.split("_")[1])
+        try:
+            print(api.wall.create_comment(message=comment, owner_id=owner_id, item_id=post_id))
+        except:
+            task.status = 'failed'
+            session2.add(task)
+            session2.commit()
+            return False
+        task.status = 'completed'
+        session2.add(task)
+        session2.commit()
         task.status = 'completed'
         session2.add(task)
         session2.commit()
