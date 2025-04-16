@@ -18,7 +18,7 @@ class Likes:
         self.active_threads = []
         self.is_running = False
         self.max_threads = 5
-        self.check_interval = 1
+        self.check_interval = 2
 
     def start(self):
         self.is_running = True
@@ -48,7 +48,7 @@ class Likes:
             for task in new_tasks:
                 if not self._is_task_in_queue(task.id):
                     self.task_queue.put(task)
-                time.sleep(0.4)
+
 
             self._balance_threads()
 
@@ -74,6 +74,7 @@ class Likes:
             thread.start()
             self.active_threads.append(thread)
             current_threads += 1
+            time.sleep(1)
 
         self.active_threads = [t for t in self.active_threads if t.is_alive()]
 
@@ -126,7 +127,7 @@ class Likes:
 
     def set_like(self, account_token: str, task_id: int) -> bool:
         print("create data")
-        time.sleep(10)
+        # time.sleep(10)
         print("done")
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
@@ -139,6 +140,7 @@ class Likes:
         owner_id = int(data.split("_")[0])
         post_id = int(data.split("_")[1])
         session = vk_api.VkApi(token=task.account)
+        session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
         try:
             print(api.likes.add(type='post', owner_id=owner_id, item_id=post_id))

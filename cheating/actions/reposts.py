@@ -48,7 +48,6 @@ class Reposts:
             for task in new_tasks:
                 if not self._is_task_in_queue(task.id):
                     self.task_queue.put(task)
-                time.sleep(0.4)
 
             self._balance_threads()
 
@@ -74,6 +73,7 @@ class Reposts:
             thread.start()
             self.active_threads.append(thread)
             current_threads += 1
+            time.sleep(1)
 
         self.active_threads = [t for t in self.active_threads if t.is_alive()]
 
@@ -107,7 +107,7 @@ class Reposts:
         except Exception as e:
             print(e)
             session2 = sessionmaker(bind=engine)()
-            task = session2.query(Task).filter(Task.id == task.id).first()
+            task = session2.query(Task).filter(Task.id == task_id).first()
             task.status = 'failed'
             self.db.commit()
             session2.add(task)
@@ -124,17 +124,16 @@ class Reposts:
 
     def set_repost(self, account_token: str, task_id: int) -> bool:
         print("create data")
-        time.sleep(10)
-        print("done")
+        
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
         url = task.url
-        if "wall-" in url:
-                data = url[url.find("wall-")+4:]
-        else:
-            data = url[url.find("wall")+4:]
-        
+
+        data = url[url.find("wall"):]
+        print(data)
+        print("done")
         session = vk_api.VkApi(token=task.account)
+        session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
         id = api.account.get_profile_info()["id"]
         print(id)
