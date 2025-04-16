@@ -7,3 +7,12 @@ class PostActions(StatesGroup):
 class AdminActions(StatesGroup):
     waiting_for_tokens = State()
     waiting_for_remove_accounts = State()
+
+class PostHunterStates(StatesGroup):
+    waiting_group_link = State()
+    waiting_likes_count = State()
+    waiting_comments_count = State()
+    waiting_reposts_count = State()
+    waiting_interval = State()
+    waiting_keyword = State()
+    managing_requests = State()

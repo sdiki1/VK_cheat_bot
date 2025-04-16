@@ -1,2 +1,2 @@
-from .DBSM import Account, engine, sessionmaker
+from .DBSM import Account, engine, sessionmaker, PostHunterRequest
 from .services import TaskManager

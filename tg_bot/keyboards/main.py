@@ -9,6 +9,7 @@ def get_main_kb():
         KeyboardButton('Накрутить репосты на пост')
     ).row(
         KeyboardButton('Написать коммент'),
+        KeyboardButton('Постхантер'),
     )
 
 def get_admin_kb():

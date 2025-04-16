@@ -1,1 +1,1 @@
-from .main_states import PostActions, AdminActions
+from .main_states import PostActions, AdminActions, PostHunterStates
