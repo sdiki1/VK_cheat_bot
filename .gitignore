@@ -9,3 +9,5 @@ __pycache__
 venv
 venv/*
 accounts.db
+database.sqlite3
+test.py

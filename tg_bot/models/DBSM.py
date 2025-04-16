@@ -2,7 +2,7 @@ import keyword
 from sqlalchemy import create_engine, Column, String, Boolean, DateTime, JSON, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
+from datetime import datetime, timezone
 
 Base = declarative_base()
 
@@ -23,6 +23,7 @@ class Task(Base):
     parameters = Column(JSON) 
     status = Column(String(20), default='pending')  
     next_run = Column(DateTime)
+    account = Column(String(85), nullable=True)
     interval = Column(Integer)  
     created_at = Column(DateTime, default=datetime.now)
 

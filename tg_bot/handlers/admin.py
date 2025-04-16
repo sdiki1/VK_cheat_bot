@@ -20,8 +20,8 @@ async def add_accounts(message: types.Message):
 
 async def process_tokens(message: types.Message, state: FSMContext):
     session = Session()
-    tokens = re.findall(r'[a-zA-Z0-9]{85}', message.text)
-    
+    tokens = message.text.split()
+    print(tokens)
     added = 0
     for token in tokens:
         try:
