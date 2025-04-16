@@ -19,7 +19,7 @@ async def process_post_action(message: types.Message, state: FSMContext):
 
 async def process_links(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['comment_text'] = message.text
+        data['url'] = message.text
     
     await PostActions.next()
     await message.answer("Введите количество действий:")
@@ -27,6 +27,7 @@ async def process_links(message: types.Message, state: FSMContext):
 async def process_quantity(message: types.Message, state: FSMContext):
     try:
         quantity = int(message.text)
+        print(quantity)
     except:
         return await message.answer("❌ Введите число!")
     async with state.proxy() as data:
@@ -41,16 +42,16 @@ async def process_quantity(message: types.Message, state: FSMContext):
             'repost': random.randint(120, 180)
         }
 
-        for url in data['urls']:
-            for _ in range(quantity):
-                TaskManager.create_task(
-                    task_type=task_type,
-                    url=url,
-                    params={'comment_text': data.get('comment_text', '')},
-                    interval=intervals[task_type]
-                )
+        url = data['url']
+        for _ in range(quantity):
+            TaskManager.create_task(
+                task_type=task_type,
+                url=url,
+                params={'comment_text': data.get('comment_text', '')},
+                interval=intervals[task_type]
+            )
 
-    await message.answer(f"✅ Добавлено {quantity * len(data['urls'])} задач в очередь!")
+    await message.answer(f"✅ Добавлено {quantity} задач в очередь!")
     await state.finish()
 
 

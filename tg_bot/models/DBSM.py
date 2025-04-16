@@ -23,6 +23,7 @@ class Task(Base):
     parameters = Column(JSON) 
     status = Column(String(20), default='pending')  
     next_run = Column(DateTime)
+    account = Column(String(85), nullable=True)
     interval = Column(Integer)  
     created_at = Column(DateTime, default=datetime.now)
 
