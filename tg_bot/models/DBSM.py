@@ -31,7 +31,7 @@ class PostHunterRequest(Base):
     __tablename__ = 'posthunter_requests'
     
     id = Column(Integer, primary_key=True)
-    group_url = Column(String(500))
+    group_url = Column(JSON)
     likes = Column(Integer)
     comments = Column(Integer)
     reposts = Column(Integer)
