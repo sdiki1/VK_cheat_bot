@@ -6,7 +6,7 @@ from queue import Queue
 from requests import session
 from sqlalchemy import and_, or_, func
 from tg_bot.models import Task, Account, sessionmaker, services, engine
-
+import vk_api
 
 
 class Likes:
@@ -128,6 +128,13 @@ class Likes:
         print("done")
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
+        url = task.url
+        data = url[url.find("wall")+4:]
+        owner_id = int(data.split("_")[0])
+        post_id = int(data.split("_")[1])
+        session = vk_api.VkApi(token=task.account)
+        api = session.get_api()
+        api.likes.add(type='post', owner_id=owner_id, item_id=post_id)
         task.status = 'completed'
         session2.add(task)
         session2.commit()
