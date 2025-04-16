@@ -18,7 +18,7 @@ class PostHunter:
         print("run posthunter")
 
     def run(self):
-        # th(target=self.run_comments).start()
+        th(target=self.run_comments).start()
         time.sleep(0.1)
         th(target=self.run_likes).start()
         time.sleep(0.1)
