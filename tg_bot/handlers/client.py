@@ -42,15 +42,16 @@ async def process_quantity(message: types.Message, state: FSMContext):
             'repost': random.randint(120, 180)
         }
 
-        url = data['url']
-        for i in range(quantity):
-            interval = intervals[task_type]*i
-            TaskManager.create_task(
-                task_type=task_type,
-                url=url,
-                params={'comment_text': data.get('comment_text', '')},
-                interval=intervals[task_type]
-            )
+        urls = data['url'].split()
+        for url in urls:
+            for i in range(quantity):
+                interval = intervals[task_type]*i
+                TaskManager.create_task(
+                    task_type=task_type,
+                    url=url,
+                    params={'comment_text': data.get('comment_text', '')},
+                    interval=interval
+                )
 
     await message.answer(f"✅ Добавлено {quantity} задач в очередь!")
     await state.finish()

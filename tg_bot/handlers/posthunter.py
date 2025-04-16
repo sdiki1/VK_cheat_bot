@@ -8,6 +8,8 @@ from aiogram.utils.markdown import hbold, hcode
 import random
 import re
 
+from sqlalchemy import JSON
+
 # import local modules
 from tg_bot.states import PostActions, AdminActions, PostHunterStates
 from tg_bot.keyboards import get_requests_kb, get_main_kb, get_request_actions_kb, get_posthunter_kb
@@ -98,10 +100,13 @@ async def process_interval(message: types.Message, state: FSMContext):
 
 
 async def process_keywords(message: types.Message, state: FSMContext):
+
+
     async with state.proxy() as data:
+        urls = data['group_url'].split()
         session = Session()
         new_request = PostHunterRequest(
-            group_url=data['group_url'],
+            group_url=urls,
             likes=data['likes'],
             comments=data['comments'],
             reposts=data['reposts'],
@@ -111,7 +116,7 @@ async def process_keywords(message: types.Message, state: FSMContext):
         )
         session.add(new_request)
         session.commit()
-    
+        
     await state.finish()
     await message.answer("✅ Заявка создана!", reply_markup=get_main_kb())
 
@@ -139,10 +144,10 @@ async def show_request_details(callback: types.CallbackQuery):
     if not request or request.owner_id != callback.from_user.id:
         await callback.answer("Заявка не найдена!")
         return
-    
+    v = "\n"
     text = (
         f"{hbold('Детали заявки')} #{request.id}\n\n"
-        f"🔗 Группа: {hcode(request.group_url)}\n"
+        f"🔗 Группы: {v.join(list(hcode(m)+' ' for m in request.group_url))}\n"
         f"❤️ Лайки: {request.likes}\n"
         f"💬 Комментарии: {request.comments}\n"
         f"↩️ Репосты: {request.reposts}\n"
