@@ -1,6 +1,6 @@
 from threading import Thread as th
 import time
-from cheating import Likes, Reposts, Comments
+from cheating import Likes, Reposts, Comments, Monitor
 class PostHunter:
     def __init__(self):
         ...
@@ -15,7 +15,7 @@ class PostHunter:
         Reposts().start()
     
     def run_posthunter(self):
-        print("run posthunter")
+        Monitor().run()
 
     def run(self):
         th(target=self.run_comments).start()
