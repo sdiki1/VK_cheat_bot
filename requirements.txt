@@ -3,3 +3,5 @@ aioredis
 environs == 8.0.0
 sqlalchemy
 vk
+vk_api
+requests
