@@ -1,3 +1,4 @@
+import keyword
 from sqlalchemy import create_engine, Column, String, Boolean, DateTime, JSON, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -34,11 +35,12 @@ class PostHunterRequest(Base):
     comments = Column(Integer)
     reposts = Column(Integer)
     interval = Column(Integer)  
+    keyword = Column(String(255), default="")
     created_at = Column(DateTime, default=datetime.now)
     is_active = Column(Boolean, default=True)
     owner_id = Column(Integer) 
 
-engine = create_engine('sqlite:///accounts.db')
+engine = create_engine('sqlite:///database.sqlite3')
 Base.metadata.create_all(bind=engine)
 
 Session = sessionmaker(bind=engine)

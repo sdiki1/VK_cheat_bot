@@ -14,4 +14,5 @@ class PostHunterStates(StatesGroup):
     waiting_comments_count = State()
     waiting_reposts_count = State()
     waiting_interval = State()
+    waiting_keyword = State()
     managing_requests = State()

@@ -1,4 +1,5 @@
 # aiogram import
+import keyword
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
@@ -80,10 +81,23 @@ async def process_reposts(message: types.Message, state: FSMContext):
     await message.answer("Введите необходимый интервал:")
 
 
-
-
-
 async def process_interval(message: types.Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Введите число!")
+        return
+    
+    async with state.proxy() as data:
+        data['interval'] = int(message.text)
+    
+    await PostHunterStates.next()
+    await message.answer("Введите ключевое слово комментария:")
+
+
+
+
+
+
+async def process_keywords(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         session = Session()
         new_request = PostHunterRequest(
@@ -91,8 +105,9 @@ async def process_interval(message: types.Message, state: FSMContext):
             likes=data['likes'],
             comments=data['comments'],
             reposts=data['reposts'],
-            interval=int(message.text),
-            owner_id=message.from_user.id
+            interval=data['interval'],
+            keyword=message.text,
+            owner_id=message.from_user.id,
         )
         session.add(new_request)
         session.commit()
@@ -165,6 +180,7 @@ def register_posthunter_handlers(dp: Dispatcher):
     dp.register_message_handler(process_comments, state=PostHunterStates.waiting_comments_count)
     dp.register_message_handler(process_reposts, state=PostHunterStates.waiting_reposts_count)
     dp.register_message_handler(process_group_link, state=PostHunterStates.waiting_group_link)
+    dp.register_message_handler(process_keywords, state=PostHunterStates.waiting_keyword)
     dp.register_message_handler(handle_posthunter, text='Постхантер')
     dp.register_message_handler(start_posthunter, text='Создать заявку')
     dp.register_callback_query_handler(show_request_details, lambda c: c.data.startswith('req_'))
