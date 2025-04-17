@@ -80,6 +80,7 @@ class Monitor:
                 self.is_changed = False
                 for hunt in Hunted:
                     for url in hunt.group_url:
+                        print("check url:", url)
                         try:
                             self.check_post(hunt, api, url)
                         except Exception as E:
