@@ -91,7 +91,7 @@ class Monitor:
                             threading.Thread(target=self.check_post, args=(hunt, api, url), daemon=True).start()
                         except Exception as E:
                             ...
-                    time.sleep(len(hunt.group_url) * 0.7 + 3)
+                    time.sleep(len(hunt.group_url) * 0.2 + 10)
                     if self.is_changed:
                         hunt.created_at = datetime.datetime.now()
                 session2.commit()
