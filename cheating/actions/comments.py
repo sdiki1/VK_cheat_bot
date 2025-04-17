@@ -105,13 +105,7 @@ class Comments:
             
             success = self.set_comment(account_token, task_id)
 
-            session2 = sessionmaker(bind=engine)()
-            task = session2.query(Task).filter(Task.id == task_id).first()
-            task.status = 'completed' if success else 'failed'
-            session2.add(task)
-            session2.commit()
-            session2.close()
-
+            print(success, task_id)
         except Exception as e:
             print(e)
             session2 = sessionmaker(bind=engine)()
@@ -153,7 +147,7 @@ class Comments:
     def set_comment(self, account_token: str, task_id: int) -> bool:
         print("create data")
         # time.sleep(10)
-        print("done")
+        
         session2 = sessionmaker(bind=engine)()
         task = session2.query(Task).filter(Task.id == task_id).first()
         session = vk_api.VkApi(token=task.account)
@@ -173,7 +167,7 @@ class Comments:
         try:
             print(api.wall.create_comment(message=comment, owner_id=owner_id, post_id=post_id))
         except Exception as E:
-            print(E)
+            print("err failed", E)
             task.status = 'failed'
             account = session2.query(Account).filter(Account.token == account_token).first()
             account.is_banned = True
@@ -185,8 +179,6 @@ class Comments:
         task.status = 'completed'
         session2.add(task)
         session2.commit()
-        task.status = 'completed'
-        session2.add(task)
-        session2.commit()
+        print("done")
         return True
     
