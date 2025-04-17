@@ -1,7 +1,7 @@
 import datetime, random, time
 from tg_bot.models import Task, Account, sessionmaker, services, engine, PostHunterRequest, TaskManager
 import vk_api
-
+import threading
 
 class Monitor:
     def __init__(self):
@@ -17,7 +17,7 @@ class Monitor:
             date_post = datetime.datetime.fromtimestamp(date)
             if date_post < hunt.created_at:
                 continue
-            
+            is_comment = False
             comments = api.wall.get_comments(owner_id=i["from_id"], post_id=i["id"])
             for j in comments["items"]:
                 if hunt.keyword in j["text"]:
@@ -82,7 +82,7 @@ class Monitor:
                     for url in hunt.group_url:
                         print("check url:", url)
                         try:
-                            self.check_post(hunt, api, url)
+                            threading.Thread(target=self.check_post, args=(hunt, api, url), daemon=True).start()
                         except Exception as E:
                             print(E)
                     time.sleep(5)
