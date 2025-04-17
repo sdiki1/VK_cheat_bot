@@ -43,6 +43,10 @@ class Comments:
                 Task.type == 'comment',
                 Task.status == 'pending',
                 Task.account.is_(None)
+            ).limit(10).all() + self.db.query(Task).filter(
+                Task.type == 'comment',
+                Task.status == 'failed',
+                Task.account.is_(None)
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:
