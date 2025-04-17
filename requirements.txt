@@ -2,6 +2,6 @@ aiogram >= 2.0,<3.0
 aioredis
 environs == 8.0.0
 marshmallow==2.13.6
-sqlalchemy
+sqlalchemy=1.1.14
 vk_api
 requests
