@@ -17,8 +17,9 @@ class Monitor:
             api = session.get_api()
 
             for hunt in Hunted:
+                is_changed = False
                 for url in hunt.group_url:
-                    is_changed = False
+                    
                     if url[-1] == "/":
                         domain = url.split("/")[-2]
                     else:
@@ -75,8 +76,8 @@ class Monitor:
                                     url=url,
                                     params={'comment_text':'comment_text'},
                                     interval=interval)
-                    if is_changed:
-                        hunt.created_at = datetime.datetime.now()
+                if is_changed:
+                    hunt.created_at = datetime.datetime.now()
             session2.commit()
             session2.close()
             time.sleep(25)
