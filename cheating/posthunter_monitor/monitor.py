@@ -37,7 +37,7 @@ class Monitor:
                 url = f"https://vk.com/wall{i['from_id']}_{i['id']}"
                 task_type = "comment"
                 quantity = hunt.comments
-                for i in range(quantity):
+                for i in range(quantity+1):
                     interval = hunt.interval*i
                     TaskManager.create_task(
                         task_type=task_type,
@@ -45,6 +45,7 @@ class Monitor:
                         params={'comment_text':'comment_text'},
                         interval=interval
                     )
+                    
                 task_type = "like"
                 quantity = hunt.likes
                 for i in range(quantity):

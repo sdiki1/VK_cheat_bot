@@ -14,6 +14,7 @@ class TaskManager:
                 interval=interval,
                 next_run=datetime.now() + timedelta(seconds=interval)
             )
+            print("next run:", datetime.now() + timedelta(seconds=interval))
             session.add(task)
             session.commit()
             print("TASK CHanged")
