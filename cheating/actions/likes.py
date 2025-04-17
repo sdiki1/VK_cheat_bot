@@ -78,7 +78,7 @@ class Likes:
             thread.start()
             self.active_threads.append(thread)
             current_threads += 1
-            time.sleep(1)
+            time.sleep(0.05)
 
         self.active_threads = [t for t in self.active_threads if t.is_alive()]
 
