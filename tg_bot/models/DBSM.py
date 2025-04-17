@@ -41,7 +41,7 @@ class PostHunterRequest(Base):
     is_active = Column(Boolean, default=True)
     owner_id = Column(Integer) 
 
-engine = create_engine('sqlite:///database.sqlite3')
+engine = create_engine('sqlite:///database.sqlite3', connect_args={"check_same_thread": False})
 Base.metadata.create_all(bind=engine)
 
 Session = sessionmaker(bind=engine)
