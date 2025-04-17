@@ -43,12 +43,12 @@ class Reposts:
                 Task.type == 'repost',
                 Task.status == 'pending',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all() + self.db.query(Task).filter(
                 Task.type == 'repost',
                 Task.status == 'failed',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:
@@ -141,6 +141,11 @@ class Reposts:
         session = vk_api.VkApi(token=task.account)
         session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
+        owner_id = int(data.split("_")[0])
+        try:
+            api.group.join(group_id=owner_id)
+        except:
+            pass
         id = api.account.get_profile_info()["id"]
         print(id)
         r = api.messages.send(user_id=id, attachment=data, random_id=0)

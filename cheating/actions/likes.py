@@ -44,12 +44,12 @@ class Likes:
                 Task.type == 'like',
                 Task.status == 'pending',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all() + self.db.query(Task).filter(
                 Task.type == 'like',
                 Task.status == 'failed',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:
@@ -149,6 +149,10 @@ class Likes:
         session = vk_api.VkApi(token=task.account)
         session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
+        try:
+            api.group.join(group_id=owner_id)
+        except:
+            pass
         try:
             print(api.likes.add(type='post', owner_id=owner_id, item_id=post_id))
         except:

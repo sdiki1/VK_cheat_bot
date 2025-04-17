@@ -44,12 +44,12 @@ class Comments:
                 Task.type == 'comment',
                 Task.status == 'pending',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all() + self.db.query(Task).filter(
                 Task.type == 'comment',
                 Task.status == 'failed',
                 Task.account.is_(None),
-                Task.next_run>datetime.datetime.now()
+                Task.next_run<datetime.datetime.now()
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:
@@ -160,11 +160,16 @@ class Comments:
         comment = self.generate_random_comment()
         session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
+        
         url = task.url
         data = url[url.find("wall")+4:]
         owner_id = int(data.split("_")[0])
         post_id = int(data.split("_")[1])
         
+        try:
+            api.group.join(group_id=owner_id)
+        except:
+            pass
         try:
             print(api.wall.create_comment(message=comment, owner_id=owner_id, post_id=post_id))
         except Exception as E:
