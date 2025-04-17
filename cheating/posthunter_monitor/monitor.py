@@ -82,8 +82,8 @@ class Monitor:
                     for url in hunt.group_url:
                         try:
                             self.check_post(hunt, api, url)
-                        except:
-                            pass
+                        except Exception as E:
+                            print(E)
                     time.sleep(5)
                     if self.is_changed:
                         hunt.created_at = datetime.datetime.now()
