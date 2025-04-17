@@ -4,12 +4,16 @@ services:
   bot:
     build: .
     env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./:/app/
     restart: unless-stopped
   posthunter:
     build: .
     env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./:/app/
     command: ["sh", "-c", "python posthunter_runner.py"]
