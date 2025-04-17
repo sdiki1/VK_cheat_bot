@@ -4,6 +4,7 @@ import time, random, vk_api
 from typing import Optional
 from queue import Queue
 from requests import session
+import datetime
 from sqlalchemy import and_, or_, func
 from tg_bot.models import Task, Account, sessionmaker, services, engine
 
@@ -42,11 +43,13 @@ class Comments:
             new_tasks = self.db.query(Task).filter(
                 Task.type == 'comment',
                 Task.status == 'pending',
-                Task.account.is_(None)
+                Task.account.is_(None),
+                Task.next_run>datetime.datetime.now()
             ).limit(10).all() + self.db.query(Task).filter(
                 Task.type == 'comment',
                 Task.status == 'failed',
-                Task.account.is_(None)
+                Task.account.is_(None),
+                Task.next_run>datetime.datetime.now()
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:

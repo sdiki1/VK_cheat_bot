@@ -1,5 +1,5 @@
 from hmac import new
-import threading
+import threading, datetime
 import time, vk_api, random
 from typing import Optional
 from queue import Queue
@@ -42,11 +42,13 @@ class Reposts:
             new_tasks = self.db.query(Task).filter(
                 Task.type == 'repost',
                 Task.status == 'pending',
-                Task.account.is_(None)
+                Task.account.is_(None),
+                Task.next_run>datetime.datetime.now()
             ).limit(10).all() + self.db.query(Task).filter(
                 Task.type == 'repost',
                 Task.status == 'failed',
-                Task.account.is_(None)
+                Task.account.is_(None),
+                Task.next_run>datetime.datetime.now()
             ).limit(10).all()
             # print(new_tasks)
             for task in new_tasks:
