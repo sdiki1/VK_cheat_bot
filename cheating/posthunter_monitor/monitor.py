@@ -84,12 +84,12 @@ class Monitor:
                             self.check_post(hunt, api, url)
                         except:
                             pass
-                    time.sleep(15)
+                    time.sleep(5)
                     if self.is_changed:
                         hunt.created_at = datetime.datetime.now()
                 session2.commit()
                 session2.close()
-                time.sleep(25)
+                # time.sleep(25)
 
             except:
                 pass
