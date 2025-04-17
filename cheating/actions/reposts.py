@@ -141,7 +141,7 @@ class Reposts:
         session = vk_api.VkApi(token=task.account)
         session.http.headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0'
         api = session.get_api()
-        owner_id = int(data.split("_")[0])
+        owner_id = int(data[3:].split("_")[0])
         try:
             api.group.join(group_id=owner_id)
         except:
